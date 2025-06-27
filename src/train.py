@@ -9,6 +9,7 @@ from src.data_processing import build_pipeline
 from src.proxy_label import create_rfm_features, assign_risk_cluster
 from sklearn.pipeline import Pipeline
 
+
 # Load and preprocess data
 df = pd.read_csv("data/raw/data.csv")
 rfm = create_rfm_features(df)
@@ -34,9 +35,11 @@ pipeline = build_pipeline()
 # Train and evaluate models
 def train_and_log(model, model_name):
     with mlflow.start_run(run_name=model_name):
+
         # Build a fresh pipeline each time
         base_pipeline = build_pipeline()
         clf = Pipeline(steps=base_pipeline.steps + [("classifier", model)])
+
 
         clf.fit(X_train, y_train)
         y_pred = clf.predict(X_test)
