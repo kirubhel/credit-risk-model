@@ -48,3 +48,28 @@ def build_pipeline():
         ("time_features", TimeFeaturesExtractor()),
         ("preprocessor", full_pipeline)
     ])
+
+if __name__ == "__main__":
+    import pandas as pd
+
+    # Sample test data (mocked)
+    data = {
+        "Amount": [1000, -500, 200],
+        "Value": [1000, 500, 200],
+        "ProductCategory": ["Electronics", "Fashion", "Electronics"],
+        "ChannelId": ["web", "app", "web"],
+        "ProviderId": ["P1", "P2", "P1"],
+        "PricingStrategy": [2, 1, 2],
+        "TransactionStartTime": ["2025-01-01 10:00:00", "2025-01-02 12:00:00", "2025-01-03 08:00:00"]
+    }
+
+    df = pd.DataFrame(data)
+    print("Original Data:")
+    print(df)
+
+    # Build and run pipeline
+    pipeline = build_pipeline()
+    X_processed = pipeline.fit_transform(df)
+
+    print("\nTransformed Feature Matrix:")
+    print(X_processed.toarray() if hasattr(X_processed, 'toarray') else X_processed)
