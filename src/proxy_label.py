@@ -3,10 +3,12 @@ from sklearn.cluster import KMeans
 from datetime import datetime
 
 def create_rfm_features(df, snapshot_date=None):
+    df["TransactionStartTime"] = pd.to_datetime(df["TransactionStartTime"])
+
     if snapshot_date is None:
         snapshot_date = df["TransactionStartTime"].max()
-
-    df["TransactionStartTime"] = pd.to_datetime(df["TransactionStartTime"])
+    else:
+        snapshot_date = pd.to_datetime(snapshot_date)
 
     rfm = df.groupby("CustomerId").agg({
         "TransactionStartTime": lambda x: (snapshot_date - x.max()).days,
@@ -19,6 +21,7 @@ def create_rfm_features(df, snapshot_date=None):
     }).reset_index()
 
     return rfm
+
 
 def assign_risk_cluster(rfm_df, random_state=42):
     rfm_scaled = rfm_df[["Recency", "Frequency", "Monetary"]].copy()
