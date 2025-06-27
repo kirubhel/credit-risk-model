@@ -7,6 +7,7 @@ from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.metrics import accuracy_score, f1_score, roc_auc_score
 from src.data_processing import build_pipeline
 from src.proxy_label import create_rfm_features, assign_risk_cluster
+from sklearn.pipeline import Pipeline
 
 # Load and preprocess data
 df = pd.read_csv("data/raw/data.csv")
@@ -33,8 +34,10 @@ pipeline = build_pipeline()
 # Train and evaluate models
 def train_and_log(model, model_name):
     with mlflow.start_run(run_name=model_name):
-        clf = pipeline
-        clf.steps.append(("classifier", model))
+        # Build a fresh pipeline each time
+        base_pipeline = build_pipeline()
+        clf = Pipeline(steps=base_pipeline.steps + [("classifier", model)])
+
         clf.fit(X_train, y_train)
         y_pred = clf.predict(X_test)
         y_prob = clf.predict_proba(X_test)[:, 1]
@@ -44,6 +47,7 @@ def train_and_log(model, model_name):
         mlflow.log_metric("f1", f1_score(y_test, y_pred))
         mlflow.log_metric("roc_auc", roc_auc_score(y_test, y_prob))
         mlflow.sklearn.log_model(clf, model_name)
+
 
 # Run models
 train_and_log(LogisticRegression(max_iter=1000), "LogisticRegression")
