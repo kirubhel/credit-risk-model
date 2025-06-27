@@ -1,4 +1,6 @@
-## Credit Scoring Business Understanding
+# Credit Risk Probability Model
+
+This project aims to predict the probability that a user is high-risk based on alternative transaction data. It simulates a real-world credit scoring system using synthetic labels, feature engineering, model training, and deployment.
 
 ### How Basel II Influences Model Design
 
@@ -15,32 +17,83 @@ Our dataset lacks a direct "default" label. To train a credit scoring model, we 
 
 ---
 
-## Project Structure
 
-credit-risk-model/
+## 🚀 Project Goals
+
+- Apply predictive modeling to identify high-risk customers
+- Create proxy labels via unsupervised clustering
+- Build robust pipelines for transformation and training
+- Log models with MLflow
+- Deploy using FastAPI, Docker, and GitHub Actions
+
+## 📁 Project Structure
+
+```
+.
 ├── data/
-│ ├── raw/
-│ │ ├── data.csv
-│ │ ├── data.xlsx
-│ │ ├── Xente_Variable_Definitions.csv
-│ │ └── Xente_Variable_Definitions.xlsx
-│ └── processed/
-├── notebooks/
+│   ├── raw/               # Raw input files
+│   └── processed/         # Cleaned/engineered data
 ├── src/
-│ ├── init.py
-│ ├── data_processing.py
-│ ├── train.py
-│ ├── predict.py
-│ └── api/
-│ ├── main.py
-│ └── pydantic_models.py
+│   ├── data_processing.py # Feature engineering pipeline
+│   ├── proxy_label.py     # Label generation using RFM + KMeans
+│   ├── train.py           # Model training with MLflow
+│   └── api/               # FastAPI prediction service
 ├── tests/
-│ └── test_data_processing.py
-├── .github/
-│ └── workflows/
-│ └── ci.yml
-├── requirements.txt
-├── docker-compose.yml
+│   └── test_data_processing.py  # Unit tests
 ├── Dockerfile
-├── .gitignore
-└── README.md
+├── docker-compose.yml
+├── requirements.txt
+└── .github/
+    └── workflows/
+        └── ci.yml         # GitHub Actions for lint & test
+```
+
+## 🧠 Key Steps
+
+### 1. Business Understanding
+- Uses Basel II internal risk model framework
+- No ground truth defaults — uses proxy labeling
+
+### 2. EDA
+- No missing values
+- Mixed data types
+- Detected negatives in Amount (possible refunds)
+
+### 3. Proxy Target Creation
+- Created `is_high_risk` label using:
+  - Recency, Frequency, Monetary (RFM)
+  - KMeans clustering
+- Label used for classification
+
+### 4. Modeling
+- `LogisticRegression` for interpretability
+- `GradientBoostingClassifier` for performance
+- MLflow used for model tracking
+
+### 5. Deployment
+- FastAPI `/predict` endpoint
+- Loads model from MLflow Registry
+- Dockerized
+- GitHub CI pipeline checks lint and tests
+
+## 🔗 GitHub Repo
+
+[https://github.com/kirubhel/credit-risk-model](https://github.com/kirubhel/credit-risk-model)
+
+## 🧪 Run Tests
+
+```bash
+pytest
+```
+
+## 📦 Run API Locally
+
+```bash
+docker-compose up --build
+```
+
+Then open: `http://localhost:8000/docs` for Swagger UI.
+
+---
+
+Created by **Kirubel Gizaw** for 10 Academy B5W5 Challenge.
